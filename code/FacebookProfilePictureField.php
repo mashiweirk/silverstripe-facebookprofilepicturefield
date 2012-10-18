@@ -15,6 +15,9 @@ class FacebookProfilePictureField extends FormField {
 		$app_id,
 		$app_secret;
 
+	private static
+		$cs_added;
+
 	protected
 		$relationAutoSetting = true,
 		$valueField,
@@ -31,6 +34,19 @@ class FacebookProfilePictureField extends FormField {
 		$this->valueField = new HiddenField($name.'[Value]', null, $value);
 		$this->upload = new RemoteUpload();
 		parent::__construct($name, $title, $value, $form);
+
+		$fbParams = array(
+			'appId' => self::$app_id,
+			'status' => true,
+			'cookie' => true,
+		);
+		Requirements::javascript('https://connect.facebook.net/en_US/all.js');
+		// Hacking terribly
+		if(!self::$cs_added) {
+			Requirements::customScript("FB.init(".json_encode($fbParams).");");
+			self::$cs_added = true;
+		}
+
 		// require JS includes
 		Requirements::javascript(MOD_FPPF_DIR . '/javascript/javascript.js');
 	}
